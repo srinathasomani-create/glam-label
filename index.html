@@ -888,7 +888,6 @@
       <option>Order Received</option>
       <option>In Production</option>
       <option>Quality Check</option>
-      <option>Payment Pending</option>
       <option>Ready to Dispatch</option>
       <option>Dispatched</option>
       <option>Delivered</option>
@@ -922,21 +921,17 @@
         <div class="col-header">3. Quality Check <span class="col-count" id="cnt-2">0</span></div>
         <div id="col-2"></div>
       </div>
-      <div class="kanban-col col-payment">
-        <div class="col-header">4. Payment Pending <span class="col-count" id="cnt-3">0</span></div>
+      <div class="kanban-col col-ready">
+        <div class="col-header">4. Ready to Dispatch <span class="col-count" id="cnt-3">0</span></div>
         <div id="col-3"></div>
       </div>
-      <div class="kanban-col col-ready">
-        <div class="col-header">5. Ready to Dispatch <span class="col-count" id="cnt-4">0</span></div>
+      <div class="kanban-col col-dispatched">
+        <div class="col-header">5. Dispatched <span class="col-count" id="cnt-4">0</span></div>
         <div id="col-4"></div>
       </div>
-      <div class="kanban-col col-dispatched">
-        <div class="col-header">6. Dispatched <span class="col-count" id="cnt-5">0</span></div>
-        <div id="col-5"></div>
-      </div>
       <div class="kanban-col col-delivered">
-        <div class="col-header">7. Delivered <span class="col-count" id="cnt-6">0</span></div>
-        <div id="col-6"></div>
+        <div class="col-header">6. Delivered <span class="col-count" id="cnt-5">0</span></div>
+        <div id="col-5"></div>
       </div>
     </div>
   </div>
@@ -1081,7 +1076,6 @@
               <option>Order Received</option>
               <option>In Production</option>
               <option>Quality Check</option>
-              <option>Payment Pending</option>
               <option>Ready to Dispatch</option>
               <option>Dispatched</option>
               <option>Delivered</option>
@@ -1232,7 +1226,7 @@ try {
 }
 
 // ── App state ────────────────────────────────────────────────
-const STATUSES = ['Order Received','In Production','Quality Check','Payment Pending','Ready to Dispatch','Dispatched','Delivered'];
+const STATUSES = ['Order Received','In Production','Quality Check','Ready to Dispatch','Dispatched','Delivered'];
 let orders = [];
 let editingId = null;
 let detailId = null;
