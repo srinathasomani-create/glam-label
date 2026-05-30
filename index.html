@@ -1268,7 +1268,10 @@ async function loadOrders() {
     console.log('Orders fetched:', data ? data.length : 0, data);
     orders = (data || []).map(dbToLocal);
     showToast('Loaded ' + orders.length + ' orders ✓', 'success');
+    console.log('Mapped orders:', orders.length, orders.map(o => o.status));
     renderAll();
+    // Force update summary
+    updateSummary();
   } catch(err) {
     showToast('Connection failed: ' + err.message, 'error');
     console.error('Load error:', err);
@@ -1590,6 +1593,7 @@ function updateSummary() {
   const totalRecv = orders.reduce((s,o) => s + (parseFloat(o.received)||0), 0);
   const totalVal = orders.reduce((s,o) => s + (parseFloat(o.total)||0), 0);
 
+  console.log('Updating summary, orders:', orders.length);
   document.getElementById('sum-total').textContent = orders.length;
   document.getElementById('sum-active-sub').textContent = active.length + ' active';
   document.getElementById('sum-prod').textContent = inProd.length;
@@ -1797,14 +1801,15 @@ document.getElementById('detail-modal').addEventListener('click', e => { if(e.ta
 
 
 // ── Boot ─────────────────────────────────────────────────────
-try {
-  subscribeRealtime();
-  loadOrders();
-} catch(e) {
-  console.error('Boot error:', e);
-  document.getElementById('sum-total').textContent = 'ERR';
-  alert('Dashboard error: ' + e.message);
-}
+document.addEventListener('DOMContentLoaded', function() {
+  try {
+    subscribeRealtime();
+    loadOrders();
+  } catch(e) {
+    console.error('Boot error:', e);
+    showToast('Error: ' + e.message, 'error');
+  }
+});
 </script>
 </body>
 </html>
