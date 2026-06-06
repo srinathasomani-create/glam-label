@@ -1133,23 +1133,25 @@ async function deleteFromDb(id) {
 function localToDb(o) {
   return {
     id: o.id,
-    name: o.name,
-    handle: o.handle,
-    location: o.location,
-    size: o.size,
-    color: o.color,
-    style: o.style,
-    led_details: o.ledDetails,
-    notes: o.notes,
-    customisation: o.customisation,
-    total: o.total,
-    received: o.received,
-    balance: o.balance,
+    name: o.name || null,
+    handle: o.handle || null,
+    iglink: o.iglink || null,
+    phone: o.phone || null,
+    location: o.location || null,
+    qty: o.qty || null,
+    size: o.size || null,
+    color: o.color || null,
+    style: o.style || null,
+    led_details: o.ledDetails || null,
+    notes: o.notes || null,
+    customisation: o.customisation || [],
+    total: parseFloat(o.total) || 0,
+    received: parseFloat(o.received) || 0,
+    balance: parseFloat(o.balance) || 0,
     order_date: o.orderDate || null,
     expected_date: o.expectedDate || null,
-    status: o.status,
-    tracking: o.tracking,
-    created_at: o.createdAt ? new Date(o.createdAt).toISOString() : new Date().toISOString()
+    status: o.status || 'Order Received',
+    tracking: o.tracking || null
   };
 }
 
@@ -1173,7 +1175,7 @@ function dbToLocal(r) {
     balance: r.balance,
     orderDate: r.order_date,
     expectedDate: r.expected_date,
-    status: r.status,
+    status: r.status || 'Order Received',
     tracking: r.tracking,
     createdAt: r.created_at ? new Date(r.created_at).getTime() : Date.now()
   };
@@ -1195,6 +1197,30 @@ function subscribeRealtime() {
       }
     })
     .subscribe();
+}
+
+const SIZES = ['38','40','42','44','46','48','50','52'];
+function updateSizeFields() {
+  const qty = document.getElementById('f-qty').value;
+  const container = document.getElementById('size-fields');
+  if (!container) return;
+  container.innerHTML = '';
+  document.getElementById('f-size').value = '';
+  if (!qty) { container.style.display = 'none'; return; }
+  container.style.display = 'block';
+  if (qty === '1') {
+    container.innerHTML = '<div class="form-group"><label>Jacket Size</label><select id="f-size1" onchange="document.getElementById('f-size').value=this.value"><option value="">Select size</option>' + SIZES.map(s => '<option>' + s + '</option>').join('') + '</select></div>';
+  } else if (qty === '2') {
+    container.innerHTML = '<div class="form-grid"><div class="form-group"><label>Male Size (M)</label><select id="f-size-male" onchange="syncSize()"><option value="">Select</option>' + SIZES.map(s => '<option value="' + s + 'M">' + s + 'M</option>').join('') + '</select></div><div class="form-group"><label>Female Size (F)</label><select id="f-size-female" onchange="syncSize()"><option value="">Select</option>' + SIZES.map(s => '<option value="' + s + 'F">' + s + 'F</option>').join('') + '</select></div></div>';
+  } else {
+    container.innerHTML = '<div style="background:rgba(255,179,0,0.08);border:1px solid var(--warning);border-radius:8px;padding:0.75rem;font-size:0.85rem;color:var(--warning);">⚠️ 3+ jackets — refer to chat for sizes. Add in Special Notes below.</div>';
+    document.getElementById('f-size').value = 'See chat';
+  }
+}
+function syncSize() {
+  const m = document.getElementById('f-size-male') ? document.getElementById('f-size-male').value : '';
+  const f = document.getElementById('f-size-female') ? document.getElementById('f-size-female').value : '';
+  document.getElementById('f-size').value = [m,f].filter(Boolean).join(' + ');
 }
 
 function genId() { return 'GO-' + Date.now().toString(36).toUpperCase(); }
@@ -1299,8 +1325,7 @@ function buildCard(o) {
 }
 
 function renderKanban(filtered) {
-  const cols = [{}, {}, {}, {}, {}, {}];
-  STATUSES.forEach((s, i) => { cols[i] = []; });
+  const cols = STATUSES.map(() => []);
   filtered.forEach(o => {
     const i = STATUSES.indexOf(o.status);
     if (i >= 0) cols[i].push(o);
@@ -1443,7 +1468,10 @@ async function saveOrder() {
     handle: document.getElementById('f-handle').value.trim(),
     iglink: document.getElementById('f-iglink') ? document.getElementById('f-iglink').value.trim() : '',
     phone: document.getElementById('f-phone') ? document.getElementById('f-phone').value.trim() : '',
+    iglink: document.getElementById('f-iglink') ? document.getElementById('f-iglink').value.trim() : '',
+    phone: document.getElementById('f-phone') ? document.getElementById('f-phone').value.trim() : '',
     location: document.getElementById('f-location').value.trim(),
+    qty: document.getElementById('f-qty') ? document.getElementById('f-qty').value : '',
     qty: document.getElementById('f-qty') ? document.getElementById('f-qty').value : '',
     size: document.getElementById('f-size').value,
     color: document.getElementById('f-color').value.trim(),
